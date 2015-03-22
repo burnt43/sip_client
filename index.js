@@ -2,6 +2,7 @@ var dgram = require('dgram');
 var EventEmitter = require('events').EventEmitter;
 var destination_host, destination_port, socket;
 var source_host, source_port;
+var retransmits = 5;
 
 
 function parse_sip_response (response) {
@@ -46,7 +47,9 @@ module.exports.create = function (host,port) {
   });
 };
 
-module.exports.ping_server = function () {
+function ping_server() {
+  var server_response = null;
+
   var message = new Buffer('OPTIONS sip:' + destination_host + ' SIP/2.0\n' +
     'Via: SIP/2.0/UDP ' + source_host + ':' + source_port + ';branch=z9hG4bK26534f84\n' +
     'Max-Forwards: 70\n' +
@@ -59,8 +62,21 @@ module.exports.ping_server = function () {
     'Accept: text/plain\n' + 
     'Content-Length: 0\n'
   );
+  
+  function send_ping() {
+    socket.send(message, 0, message.length, destination_port, destination_host, function (err) {});
+    setTimeout( function () {
+      if ( !server_response ) { send_ping(); }
+    }, 3000 );
+  }
+
   socket.on('message', function (data,info) {
     hash = parse_sip_response(data.toString());
+    server_response = hash['Header'].match(/200 OK/);
   });
-  socket.send(message, 0, message.length, destination_port, destination_host, function (err) {});
+
+  send_ping();
+
 };
+
+module.exports.ping_server = ping_server;
