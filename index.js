@@ -19,6 +19,8 @@ function parse_sip_response (response) {
       response_hash[name.substring(0,name.length-1)] = info;
     } else if ( name.length > 0 ) {
       response_hash['Header'] = line;
+    } else {
+      //emit event
     }
   }
 
@@ -66,7 +68,10 @@ function ping_server() {
   function send_ping() {
     socket.send(message, 0, message.length, destination_port, destination_host, function (err) {});
     setTimeout( function () {
-      if ( !server_response ) { send_ping(); }
+      if ( !server_response ) {
+        send_ping();
+      } else {
+      }
     }, 3000 );
   }
 
