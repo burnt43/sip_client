@@ -37,11 +37,11 @@ SipClient.prototype.ping_server = function () {
 
   var callid = this.create_callid();
   var options_message = SipClientHelper.replace_values( SipMessageTemplates.options, {
-    'source_address': this.sip_socket.get_source_address(),
-    'source_port': this.sip_socket.get_source_port(),
-    'destination_address': this.sip_socket.get_sip_server_address(),
-    'destination_port': this.sip_socket.get_sip_server_port(),
-    'sip_callid': callid
+    'source_address':       this.sip_socket.get_source_address(),
+    'source_port':          this.sip_socket.get_source_port(),
+    'destination_address':  this.sip_socket.get_sip_server_address(),
+    'destination_port':     this.sip_socket.get_sip_server_port(),
+    'sip_callid':           callid
   });
 
   this.sip_socket.write(options_message);
@@ -62,14 +62,14 @@ SipClient.prototype.register = function () {
       if ( !response ) { response = self.generate_response() }
 
       return SipClientHelper.replace_values( SipMessageTemplates.register, {
-        'source_address': self.sip_socket.get_source_address(),
-        'source_port': self.sip_socket.get_source_port(),
-        'destination_address': self.sip_socket.get_sip_server_address(),
-        'destination_port': self.sip_socket.get_sip_server_port(),
-        'sip_user_name': self.username,
-        'sip_nonce': nonce,
-        'sip_response': response,
-        'sip_callid': callid
+        'source_address':       self.sip_socket.get_source_address(),
+        'source_port':          self.sip_socket.get_source_port(),
+        'destination_address':  self.sip_socket.get_sip_server_address(),
+        'destination_port':     self.sip_socket.get_sip_server_port(),
+        'sip_user_name':        self.username,
+        'sip_nonce':            nonce,
+        'sip_response':         response,
+        'sip_callid':           callid
       });
   }
 
