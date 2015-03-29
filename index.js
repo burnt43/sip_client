@@ -33,12 +33,34 @@ SipClient.prototype.generate_response = function (nonce,realm) {
   }
 }
 
+SipClient.prototype.register_listeners = function (listeners) {
+
+  var self = this;
+  Object.keys(listeners).forEach( function(listener_name) {
+    self.sip_socket.on(listener_name, listeners[listener_name]);
+  });
+}
+
+SipClient.prototype.remove_listeners = function (listeners) {
+  
+  var self = this;
+  Object.keys(listeners).forEach( function(listener_name) {
+    self.sip_socket.removeAllListeners(listener_name);
+  });
+
+}
+
 SipClient.prototype.ping_server = function () {
 
   var self = this;
 
-  function remove_listeners () {
-    self.sip_socket.removeAllListeners('200');
+  function ok (data) {
+    console.log(data);
+    self.remove_listeners(listeners);
+  }
+
+  var listeners = {
+    '200': ok
   }
 
   var callid = this.create_callid();
@@ -50,25 +72,36 @@ SipClient.prototype.ping_server = function () {
     'sip_callid':           callid
   });
 
+  this.register_listeners(listeners);
   this.sip_socket.write(options_message);
-
-  this.sip_socket.on('200', function (data) {
-    console.log(data);
-    remove_listeners();
-  });
 
 }
 
 SipClient.prototype.register = function () {
 
-  var callid = this.create_callid();
   var self = this;
+  var callid = this.create_callid();
 
-  function remove_listeners () {
-    self.sip_socket.removeAllListeners('401');
-    self.sip_socket.removeAllListeners('200');
-    self.sip_socket.removeAllListeners('403');
-    self.sip_socket.removeAllListeners('482');
+  function unauthorized (data) {
+    console.log(data);
+    var nonce = data['WWW-Authenticate']['nonce'];
+    var realm = data['WWW-Authenticate']['realm'];
+    response = self.generate_response(nonce,realm);
+    self.sip_socket.write( create_register_message(nonce,response) );
+  }
+
+  function ok (data) {
+    console.log(data);
+    self.remove_listeners(listeners);
+    self.emit('registration_successful');
+  }
+
+  function forbidden (data) { console.log(data); }
+
+  var listeners = {
+    '200': ok,
+    '401': unauthorized,
+    '403': forbidden
   }
 
   function create_register_message (nonce, response) {
@@ -87,28 +120,7 @@ SipClient.prototype.register = function () {
       });
   }
 
-  this.sip_socket.on('401', function (data) {
-    console.log(data);
-    var nonce = data['WWW-Authenticate']['nonce'];
-    var realm = data['WWW-Authenticate']['realm'];
-    response = self.generate_response(nonce,realm);
-    self.sip_socket.write( create_register_message(nonce,response) );
-  });
-
-  this.sip_socket.on('200', function (data) {
-    console.log(data);
-    remove_listeners();
-    self.emit('registration_successful');
-  });
-
-  this.sip_socket.on('403', function (data) {
-    console.log(data);
-  });
-
-  this.sip_socket.on('482', function (data) {
-    console.log(data);
-  });
-
+  this.register_listeners(listeners);
   this.sip_socket.write( create_register_message() );
 
 }
