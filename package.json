@@ -1,0 +1,27 @@
+{
+  "name": "sip_client",
+  "version": "0.0.0",
+  "description": "sip client for connecting to SIP servers and placing test calls",
+  "dependencies": {
+    "sip_socket": "*"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burnt43/sip_client.git"
+  },
+  "keywords": [
+    "SIP",
+    "asterisk",
+    "VOIP"
+  ],
+  "author": "James Carson <jms.crsn@gmail.com> (https://github.com/burnt43)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/burnt43/sip_client/issues"
+  },
+  "homepage": "https://github.com/burnt43/sip_client"
+}
