@@ -35,6 +35,12 @@ SipClient.prototype.generate_response = function (nonce,realm) {
 
 SipClient.prototype.ping_server = function () {
 
+  var self = this;
+
+  function remove_listeners () {
+    self.sip_socket.removeAllListeners('200');
+  }
+
   var callid = this.create_callid();
   var options_message = SipClientHelper.replace_values( SipMessageTemplates.options, {
     'source_address':       this.sip_socket.get_source_address(),
@@ -48,6 +54,7 @@ SipClient.prototype.ping_server = function () {
 
   this.sip_socket.on('200', function (data) {
     console.log(data);
+    remove_listeners();
   });
 
 }
@@ -56,6 +63,13 @@ SipClient.prototype.register = function () {
 
   var callid = this.create_callid();
   var self = this;
+
+  function remove_listeners () {
+    self.sip_socket.removeAllListeners('401');
+    self.sip_socket.removeAllListeners('200');
+    self.sip_socket.removeAllListeners('403');
+    self.sip_socket.removeAllListeners('482');
+  }
 
   function create_register_message (nonce, response) {
       if ( !nonce ) { nonce = self.generate_nonce(); }
@@ -83,17 +97,40 @@ SipClient.prototype.register = function () {
 
   this.sip_socket.on('200', function (data) {
     console.log(data);
+    remove_listeners();
+    self.emit('registration_successful');
   });
 
   this.sip_socket.on('403', function (data) {
     console.log(data);
   });
 
-  this. sip_socket.on('482', function (data) {
+  this.sip_socket.on('482', function (data) {
     console.log(data);
   });
 
   this.sip_socket.write( create_register_message() );
+
+}
+
+SipClient.prototype.place_call = function (phone_number) {
+  
+  var callid = this.create_callid();
+  var invite_message = SipClientHelper.replace_values( SipMessageTemplates.invite, {
+    'source_address'      : this.sip_socket.get_source_address(),
+    'source_port'         : this.sip_socket.get_source_port(),
+    'destination_address' : this.sip_socket.get_sip_server_address(),
+    'destination_port'    : this.sip_socket.get_sip_server_port(),
+    'sip_callid'          : callid,
+    'sip_user_name'       : this.username,
+    'dialed_number'       : phone_number
+  });
+
+  this.sip_socket.on('401', function (data) {
+    console.log(data);
+  });
+
+  this.sip_socket.write( invite_message );
 
 }
 
