@@ -34,6 +34,7 @@ module.exports.invite =
   + 'Call-ID: $SIP_CALLID\n'
   + 'CSeq: 101 INVITE\n'
   + 'Contact: "unknown" <sip:$SIP_USER_NAME@$SOURCE_ADDRESS>\n'
+  + 'Authorization: Digest username="$SIP_USER_NAME", realm="asterisk", nonce="$SIP_NONCE", uri="sip:$DIALED_NUMBER@$DESTINATION_ADDRESS", response="$SIP_RESPONSE", algorithm=MD5\n'
   + 'Content-Type: application/sdp\n'
   + 'Allow: ACK, BYE, CANCEL, INFO, INVITE, NOTIFY, OPTIONS, REFER, UPDATE\n'
   + 'Max-forwards: 69\n'
