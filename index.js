@@ -1,6 +1,9 @@
 var SipSocket           = require('sip_socket');
 var SipMessageTemplates = require('./sip_message_templates.js');
-var SipClientHelper     = require('./sip_client_helper.js');
+var SipClientHelper     = require('./sip_helper.js');
+var SipPing             = require('./sip_ping.js');
+var SipTransaction      = require('./sip_transaction.js');
+
 
 function SipClient (sip_server_address,sip_server_port,username,password) {
 
@@ -20,6 +23,11 @@ SipClient.prototype.connect = function () {
     self.emit('connection_established');
   });
     
+}
+
+SipClient.prototype.ping_server = function () {
+  var transaction = new SipPing(this,this.sip_socket);
+  transaction.execute();
 }
 
 SipClient.prototype.create_callid = function () { return this.generate_response() + '@' + this.sip_socket.get_source_address(); }
@@ -50,32 +58,6 @@ SipClient.prototype.remove_listeners = function (listeners) {
 
 }
 
-SipClient.prototype.ping_server = function () {
-
-  var self = this;
-
-  function ok (data) {
-    console.log(data);
-    self.remove_listeners(listeners);
-  }
-
-  var listeners = {
-    '200': ok
-  }
-
-  var callid = this.create_callid();
-  var options_message = SipClientHelper.replace_values( SipMessageTemplates.options, {
-    'source_address':       this.sip_socket.get_source_address(),
-    'source_port':          this.sip_socket.get_source_port(),
-    'destination_address':  this.sip_socket.get_sip_server_address(),
-    'destination_port':     this.sip_socket.get_sip_server_port(),
-    'sip_callid':           callid
-  });
-
-  this.register_listeners(listeners);
-  this.sip_socket.write(options_message);
-
-}
 
 SipClient.prototype.register = function () {
 
