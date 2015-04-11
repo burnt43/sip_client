@@ -23,7 +23,25 @@ SipTransaction.prototype.kill_all_listeners = function () {
   });
 }
 
+SipTransaction.prototype.get_nonce = function () {
+  if (this.nonce) {
+    return this.nonce;
+  } else {
+    return SipHelper.md5_sum( SipHelper.random_number() ).substring(0,8);
+  }
+}
+
+SipTransaction.prototype.get_response = function () {
+  return SipHelper.md5_sum( SipHelper.md5_sum(this.sip_client.get_username() + ':' + this.realm + ':' + this.sip_client.get_password())
+                            + ':' 
+                            + this.get_nonce()
+                            + ':' 
+                            + SipHelper.md5_sum('REGISTER:sip:'+this.sip_socket.get_sip_server_address()) );
+}
+
+
 SipTransaction.prototype.execute = function () { throw 'execute() must be defined in subclass!' }
 
 function SipTransaction (sip_client,sip_socket) { initialize(sip_client,sip_socket); }
+SipTransaction.prototype.__proto__ = require('events').EventEmitter.prototype;
 module.exports = SipTransaction;
