@@ -30,19 +30,24 @@ SipClient.prototype.connect = function () {
 }
 
 SipClient.prototype.ping_server = function () {
+  var self = this;
   var transaction = new SipPing(this,this.sip_socket);
   transaction.execute();
-}
-
-SipClient.prototype.register = function () {
-  var transaction = new SipRegister(this,this.sip_socket);
-  transaction.execute();
-  transaction.on('success', function () {
-    console.log('REGISTERED!');
+  transaction.once('success', function () {
+    self.emit('success');
   });
 }
 
-SipClient.prototype.place_call = function (phone_number) {
+SipClient.prototype.register = function () {
+  var self = this;
+  var transaction = new SipRegister(this,this.sip_socket);
+  transaction.execute();
+  transaction.once('success', function () {
+    self.emit('success');
+  });
+}
+
+SipClient.prototype.place_call = function ( phone_number ) {
 /*  
   var self = this;
   var callid = this.create_callid();

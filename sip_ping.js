@@ -15,8 +15,11 @@ SipPing.prototype.execute = function () {
   });
 
   this.create_listener('200', function (data) {
+    console.log('\033[0;34m');
     console.log(data);
+    console.log('\033[0;39m');
     self.kill_all_listeners();
+    self.emit('success');
   });
 
   this.sip_socket.write(options_message);

@@ -7,20 +7,26 @@ SipRegister.prototype.execute = function () {
   var self = this;
 
   this.create_listener('401', function (data) {
+    console.log('\033[0;32m');
     console.log(data);
+    console.log('\033[0;39m');
     self.nonce = data['WWW-Authenticate']['nonce'];
     self.realm = data['WWW-Authenticate']['realm'];
     self.sip_socket.write( self.message() );
   });
 
   this.create_listener('200', function (data) {
+    console.log('\033[0;32m');
     console.log(data);
+    console.log('\033[0;39m');
     self.kill_all_listeners();
     self.emit('success');
   });
 
   this.create_listener('403', function (data) { 
+    console.log('\033[0;32m');
     console.log(data);
+    console.log('\033[0;39m');
   });
 
   this.sip_socket.write( this.message() );
