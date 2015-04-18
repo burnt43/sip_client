@@ -1,20 +1,29 @@
 var SipHelper = require('./sip_helper.js');
 
-SipTransaction.prototype.initialize = function (sip_client,sip_socket) {
-  this.sip_client = sip_client;
-  this.sip_socket = sip_socket;
-  this.callid     = this.create_callid();
-  this.listeners  = {};
+//
+// GETTERS
+//
+
+SipTransaction.prototype.get_nonce = function () {
+  if (this.nonce) {
+    return this.nonce;
+  } else {
+    return SipHelper.md5_sum( SipHelper.random_number() ).substring(0,8);
+  }
 }
 
-SipTransaction.prototype.create_callid = function () {
-  return SipHelper.md5_sum( SipHelper.random_number() ) + '@' + this.sip_socket.get_source_address();
+SipTransaction.prototype.get_response = function () {
+  return SipHelper.md5_sum( SipHelper.md5_sum(this.sip_client.get_username() + ':' + this.realm + ':' + this.sip_client.get_password())
+                            + ':' 
+                            + this.get_nonce()
+                            + ':' 
+                            + SipHelper.md5_sum('REGISTER:sip:'+this.sip_socket.get_sip_server_address()) );
 }
 
-SipTransaction.prototype.accept_response = function ( data ) {
-  console.log('mine: ' + this.callid + ' theirs: ' + data['Call-ID']);
-  return this.callid == data['Call-ID'];
-}
+
+//
+// LISTERNER FUNCTIONS
+//
 
 SipTransaction.prototype.create_listener = function (message_type,callback) {
   
@@ -38,24 +47,34 @@ SipTransaction.prototype.kill_all_listeners = function () {
   });
 }
 
-SipTransaction.prototype.get_nonce = function () {
-  if (this.nonce) {
-    return this.nonce;
-  } else {
-    return SipHelper.md5_sum( SipHelper.random_number() ).substring(0,8);
-  }
+//
+// PRIVATE HELPER STUFF
+//
+
+SipTransaction.prototype.create_callid = function () {
+  return SipHelper.md5_sum( SipHelper.random_number() ) + '@' + this.sip_socket.get_source_address();
 }
 
-SipTransaction.prototype.get_response = function () {
-  return SipHelper.md5_sum( SipHelper.md5_sum(this.sip_client.get_username() + ':' + this.realm + ':' + this.sip_client.get_password())
-                            + ':' 
-                            + this.get_nonce()
-                            + ':' 
-                            + SipHelper.md5_sum('REGISTER:sip:'+this.sip_socket.get_sip_server_address()) );
+SipTransaction.prototype.accept_response = function ( data ) {
+  return this.callid == data['Call-ID'];
 }
 
+//
+// FUNCTIONS I EXCEPT TO BE IMPLEMENTED IN CHILDREN
+//
 
 SipTransaction.prototype.execute = function () { throw 'execute() must be defined in subclass!' }
+
+//
+// CLASS DEFINITION AND CONSTRUCTOR
+//
+
+SipTransaction.prototype.initialize = function (sip_client,sip_socket) {
+  this.sip_client = sip_client;
+  this.sip_socket = sip_socket;
+  this.callid     = this.create_callid();
+  this.listeners  = {};
+}
 
 function SipTransaction (sip_client,sip_socket) { initialize(sip_client,sip_socket); }
 SipTransaction.prototype.__proto__ = require('events').EventEmitter.prototype;
