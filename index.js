@@ -3,6 +3,7 @@ var SipMessageTemplates = require('./sip_message_templates.js');
 var SipClientHelper     = require('./sip_helper.js');
 var SipPing             = require('./sip_ping.js');
 var SipRegister         = require('./sip_register.js');
+var SipCall             = require('./sip_call.js');
 var SipTransaction      = require('./sip_transaction.js');
 
 
@@ -48,6 +49,8 @@ SipClient.prototype.register = function () {
 }
 
 SipClient.prototype.place_call = function ( phone_number ) {
+  var transaction = new SipCall(this,this.sip_socket,phone_number);
+  transaction.execute();
 }
 
 SipClient.prototype.__proto__ = require('events').EventEmitter.prototype;
