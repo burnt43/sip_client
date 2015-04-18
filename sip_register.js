@@ -46,6 +46,8 @@ SipRegister.prototype.message = function () {
   });
 }
 
+SipRegister.prototype.message_name = function () { return "REGISTER"; }
+
 function SipRegister (sip_client,sip_socket) { this.initialize(sip_client,sip_socket); }
 SipRegister.prototype.__proto__ = SipTransaction.prototype;
 module.exports = SipRegister;
