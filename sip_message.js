@@ -1,12 +1,12 @@
 var SipHelper = require('./sip_helper.js');
 
 SipMessage.prototype.set_content = function ( content ) {
-  this.content = content;
+  this.content = '\n' + content;
 }
 
 SipMessage.prototype.to_s = function () {
   return this.message_string 
-         + '\nContent-Length: ' + this.content.length
+         + 'Content-Length: ' + this.content.length
          + '\n' + this.content
 }
 
