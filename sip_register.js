@@ -1,18 +1,24 @@
 var SipTransaction      = require('./sip_transaction.js');
 var SipHelper           = require('./sip_helper.js');
 var SipMessageTemplates = require('./sip_message_templates.js');
+var SipMessage          = require('./sip_message.js');
 
 SipRegister.prototype.execute = function () {
 
   var self = this;
+  var initial_request     = new SipMessage( SipMessageTemplates.register, this.message_data() );
+  var challenge_response  = null;
 
   this.create_listener('401', function (data) {
     console.log('\033[0;32m');
     console.log(data);
     console.log('\033[0;39m');
-    self.nonce = data['WWW-Authenticate']['nonce'];
-    self.realm = data['WWW-Authenticate']['realm'];
-    self.sip_socket.write( self.message() );
+
+    self.nonce          = data['WWW-Authenticate']['nonce'];
+    self.realm          = data['WWW-Authenticate']['realm'];
+    challenge_response  = new SipMessage( SipMessageTemplates.register, self.message_data() );
+
+    self.sip_socket.write( challenge_response.get_message_string() );
   });
 
   this.create_listener('200', function (data) {
@@ -29,12 +35,12 @@ SipRegister.prototype.execute = function () {
     console.log('\033[0;39m');
   });
 
-  this.sip_socket.write( this.message() );
+  this.sip_socket.write( initial_request.get_message_string() );
 
 }
   
-SipRegister.prototype.message = function () {
-  return SipHelper.replace_values(  SipMessageTemplates.register, {
+SipRegister.prototype.message_data = function () {
+  return {
     'source_address':               this.sip_socket.get_source_address(),
     'source_port':                  this.sip_socket.get_source_port(),
     'destination_address':          this.sip_socket.get_sip_server_address(),
@@ -43,7 +49,7 @@ SipRegister.prototype.message = function () {
     'sip_nonce':                    this.get_nonce(),
     'sip_response':                 this.get_response(),
     'sip_callid':                   this.callid
-  });
+  }
 }
 
 SipRegister.prototype.message_name = function () { return 'REGISTER'; }

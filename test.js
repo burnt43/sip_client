@@ -5,10 +5,10 @@ sip_client.connect();
 sip_client.on('connection_established', function () {
   sip_client.ping_server();
   sip_client.once('success', function () {
-    console.log('hello');
-    //sip_client.register();
-    //sip_client.once('success', function () {
-    //  sip_client.place_call('666');
-    //});
+    sip_client.register();
+    sip_client.once('success', function () {
+      console.log('fhifhdof');
+      //sip_client.place_call('666');
+    });
   });
 });
