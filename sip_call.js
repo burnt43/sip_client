@@ -15,7 +15,7 @@ SipCall.prototype.execute = function () {
     //self.sip_socket.write( self.message() );
   });
 
-  this.sip_socket.write( initial_request.get_message_string() );
+  this.sip_socket.write( initial_request.to_s() );
 
 }
   

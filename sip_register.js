@@ -14,7 +14,7 @@ SipRegister.prototype.execute = function () {
     self.realm          = data['WWW-Authenticate']['realm'];
     challenge_response  = new SipMessage( SipMessageTemplates.register, self.message_data() );
 
-    self.sip_socket.write( challenge_response.get_message_string() );
+    self.sip_socket.write( challenge_response.to_s() );
   });
 
   this.create_listener('200', function (data) {
@@ -22,7 +22,7 @@ SipRegister.prototype.execute = function () {
     self.emit('success');
   });
 
-  this.sip_socket.write( initial_request.get_message_string() );
+  this.sip_socket.write( initial_request.to_s() );
 
 }
   

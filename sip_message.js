@@ -4,7 +4,7 @@ SipMessage.prototype.set_content = function ( content ) {
   this.content = content;
 }
 
-SipMessage.prototype.get_message_string = function () {
+SipMessage.prototype.to_s = function () {
   return this.message_string 
          + '\nContent-Length: ' + this.content.length
          + '\n' + this.content

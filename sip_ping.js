@@ -13,7 +13,7 @@ SipPing.prototype.execute = function () {
     self.emit('success');
   });
 
-  this.sip_socket.write( options_message.get_message_string() );
+  this.sip_socket.write( options_message.to_s() );
 }
 
 SipPing.prototype.message_data = function () {
