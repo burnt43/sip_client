@@ -9,9 +9,6 @@ SipPing.prototype.execute = function () {
   var options_message = new SipMessage( SipMessageTemplates.options, this.message_data() );
 
   this.create_listener('200', function (data) {
-    console.log('\033[0;34m');
-    console.log(data);
-    console.log('\033[0;39m');
     self.kill_all_listeners();
     self.emit('success');
   });
@@ -28,6 +25,8 @@ SipPing.prototype.message_data = function () {
     'sip_callid':           this.callid
   };
 }
+
+SipPing.prototype.log_color = function () { return 'RED' }
 
 function SipPing (sip_client,sip_socket) { this.initialize(sip_client,sip_socket); }
 SipPing.prototype.__proto__ = SipTransaction.prototype;

@@ -1,4 +1,13 @@
 var SipHelper = require('./sip_helper.js');
+var COLORS    = {
+  'BLACK' : 30,
+  'RED'   : 31,
+  'GREEN' : 32,
+  'YELLOW': 33,
+  'BLUE'  : 34,
+  'PURPLE': 35,
+  'TEAL:':  36
+};
 
 //
 // GETTERS
@@ -26,10 +35,10 @@ SipTransaction.prototype.get_response = function () {
 //
 
 SipTransaction.prototype.create_listener = function (message_type,callback) {
-  
-  var self = this;
 
+  var self = this;
   var callback_with_ignore = function (data) {
+    self.log_data(data);
     if ( self.accept_response(data) ) {
       callback(data);
     }
@@ -59,12 +68,19 @@ SipTransaction.prototype.accept_response = function ( data ) {
   return this.callid == data['Call-ID'];
 }
 
+SipTransaction.prototype.log_data = function ( data ) {
+  console.log('\033[0;' + COLORS[this.log_color()] + 'm');
+  console.log(data);
+  console.log('\033[0;39m');
+}
+
 //
 // FUNCTIONS I EXCEPT TO BE IMPLEMENTED IN CHILDREN
 //
 
-SipTransaction.prototype.execute =      function () { throw 'execute() must be defined in subclass!' }
+SipTransaction.prototype.execute      = function () { throw 'execute() must be defined in subclass!' }
 SipTransaction.prototype.message_name = function () { throw 'execute() must be defined in subclass!' }
+SipTransaction.prototype.log_color    = function () { throw 'execute() must be defined in subclass!' }
 
 //
 // CLASS DEFINITION AND CONSTRUCTOR

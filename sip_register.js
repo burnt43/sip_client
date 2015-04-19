@@ -10,10 +10,6 @@ SipRegister.prototype.execute = function () {
   var challenge_response  = null;
 
   this.create_listener('401', function (data) {
-    console.log('\033[0;32m');
-    console.log(data);
-    console.log('\033[0;39m');
-
     self.nonce          = data['WWW-Authenticate']['nonce'];
     self.realm          = data['WWW-Authenticate']['realm'];
     challenge_response  = new SipMessage( SipMessageTemplates.register, self.message_data() );
@@ -22,17 +18,8 @@ SipRegister.prototype.execute = function () {
   });
 
   this.create_listener('200', function (data) {
-    console.log('\033[0;32m');
-    console.log(data);
-    console.log('\033[0;39m');
     self.kill_all_listeners();
     self.emit('success');
-  });
-
-  this.create_listener('403', function (data) { 
-    console.log('\033[0;32m');
-    console.log(data);
-    console.log('\033[0;39m');
   });
 
   this.sip_socket.write( initial_request.get_message_string() );
@@ -52,7 +39,8 @@ SipRegister.prototype.message_data = function () {
   }
 }
 
-SipRegister.prototype.message_name = function () { return 'REGISTER'; }
+SipRegister.prototype.log_color     = function () { return 'BLUE' }
+SipRegister.prototype.message_name  = function () { return 'REGISTER'; }
 
 function SipRegister (sip_client,sip_socket) { this.initialize(sip_client,sip_socket); }
 SipRegister.prototype.__proto__ = SipTransaction.prototype;
