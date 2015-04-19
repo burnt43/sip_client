@@ -7,7 +7,7 @@ sip_client.on('connection_established', function () {
   sip_client.once('success', function () {
     sip_client.register();
     sip_client.once('success', function () {
-      //sip_client.place_call('666');
+      sip_client.place_call('666');
     });
   });
 });

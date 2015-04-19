@@ -6,8 +6,9 @@ var SipMessage          = require('./sip_message.js');
 SipCall.prototype.execute = function () {
 
   var self                = this;
-  var initial_request     = new SipMessage( SipMessageTemplates.invite, this.message_data() );
+  var initial_request     = new SipMessage( SipMessageTemplates.invite, this.message_data(), 101 );
   var challenge_response  = null;
+  var ack                 = null;
   var content             = 'v=0\n'
     + 'o=root 268027673 268027674 IN IP4 127.0.0.1\n'
     + 'c=IN IP4 127.0.0.1\n'
@@ -22,9 +23,11 @@ SipCall.prototype.execute = function () {
   this.create_listener('401', function (data) {
     self.nonce          = data['WWW-Authenticate']['nonce'];
     self.realm          = data['WWW-Authenticate']['realm'];
-    challenge_response  = new SipMessage( SipMessageTemplates.invite, self.message_data() );
+    ack                 = new SipMessage( SipMessageTemplates.ack   , self.message_data() );
+    challenge_response  = new SipMessage( SipMessageTemplates.invite, self.message_data(), 102 );
 
     challenge_response.set_content(content);
+    self.sip_socket.write( ack.to_s() );
     self.sip_socket.write( challenge_response.to_s() );
   });
 
