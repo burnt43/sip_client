@@ -8,8 +8,7 @@ module.exports.options =
   + 'Call-ID: $SIP_CALLID\n'
   + 'CSeq: 102 OPTIONS\n'
   + 'User-Agent: James\n'
-  + 'Accept: text/plain\n'
-  + 'Content-Length: 0\n';
+  + 'Accept: text/plain\n';
 
 module.exports.register =
     'REGISTER sip:$DESTINATION_ADDRESS SIP/2.0\n'
@@ -23,8 +22,7 @@ module.exports.register =
   + 'Allow: ACK, BYE, CANCEL, INFO, INVITE, NOTIFY, OPTIONS, REFER, UPDATE\n'
   + 'Max-forwards: 69\n'
   + 'User-agent: foobar\n'
-  + 'Supported: replaces\n'
-  + 'Content-Length: 0\n';
+  + 'Supported: replaces\n';
 
 module.exports.invite = 
     'INVITE sip:$DIALED_NUMBER@$DESTINATION_ADDRESS SIP/2.0\n'
@@ -40,8 +38,7 @@ module.exports.invite =
   + 'Max-forwards: 69\n'
   + 'Expires: 240\n'
   + 'User-agent: foobar\n'
-  + 'Supported: replaces\n'
-  + 'Content-Length: 0\n';
+  + 'Supported: replaces\n';
 
 /* SDP STUFF
   v=0
