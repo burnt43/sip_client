@@ -8,11 +8,24 @@ SipCall.prototype.execute = function () {
   var self                = this;
   var initial_request     = new SipMessage( SipMessageTemplates.invite, this.message_data() );
   var challenge_response  = null;
+  var content             = 'v=0\n'
+    + 'o=root 268027673 268027674 IN IP4 127.0.0.1\n'
+    + 'c=IN IP4 127.0.0.1\n'
+    + 't=0 0\n'
+    + 'm=audio 15374 RTP/AVP 0\n'
+    + 'a=rtpmap:0 PCMU/8000\n'
+    + 'a=ptime:20\n'
+    + 'a=sendrecv\n';
+
+  initial_request.set_content(content)
 
   this.create_listener('401', function (data) {
-    self.nonce = data['WWW-Authenticate']['nonce'];
-    self.realm = data['WWW-Authenticate']['realm'];
-    //self.sip_socket.write( self.message() );
+    self.nonce          = data['WWW-Authenticate']['nonce'];
+    self.realm          = data['WWW-Authenticate']['realm'];
+    challenge_response  = new SipMessage( SipMessageTemplates.invite, self.message_data() );
+
+    challenge_response.set_content(content);
+    self.sip_socket.write( challenge_response.to_s() );
   });
 
   this.sip_socket.write( initial_request.to_s() );
