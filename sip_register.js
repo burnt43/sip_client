@@ -39,8 +39,10 @@ SipRegister.prototype.message_data = function () {
   }
 }
 
-SipRegister.prototype.log_color     = function () { return 'BLUE' }
-SipRegister.prototype.message_name  = function () { return 'REGISTER'; }
+SipRegister.prototype.log_color           = function () { return 'BLUE' }
+SipRegister.prototype.authorization_line  = function () { 
+  return 'REGISTER:sip:' + this.sip_socket.get_sip_server_address();
+}
 
 function SipRegister (sip_client,sip_socket) { this.initialize(sip_client,sip_socket); }
 SipRegister.prototype.__proto__ = SipTransaction.prototype;

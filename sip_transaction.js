@@ -26,7 +26,7 @@ SipTransaction.prototype.get_response = function () {
                             + ':' 
                             + this.get_nonce()
                             + ':' 
-                            + SipHelper.md5_sum( this.message_name() + ':sip:' + this.sip_socket.get_sip_server_address()) );
+                            + SipHelper.md5_sum( this.authorization_line() ) );
 }
 
 
@@ -78,9 +78,9 @@ SipTransaction.prototype.log_data = function ( data ) {
 // FUNCTIONS I EXCEPT TO BE IMPLEMENTED IN CHILDREN
 //
 
-SipTransaction.prototype.execute      = function () { throw 'execute() must be defined in subclass!' }
-SipTransaction.prototype.message_name = function () { throw 'execute() must be defined in subclass!' }
-SipTransaction.prototype.log_color    = function () { throw 'execute() must be defined in subclass!' }
+SipTransaction.prototype.execute            = function () { throw 'execute() must be defined in subclass!' }
+SipTransaction.prototype.authorization_line = function () { throw 'authorization_line() must be defined in subclass' }
+SipTransaction.prototype.log_color          = function () { throw 'log_color() must be defined in subclass!' }
 
 //
 // CLASS DEFINITION AND CONSTRUCTOR

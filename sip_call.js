@@ -46,8 +46,10 @@ SipCall.prototype.message_data = function () {
   };
 }
 
-SipCall.prototype.log_color     = function () { return 'GREEN'; }
-SipCall.prototype.message_name  = function () { return 'INVITE'; }
+SipCall.prototype.log_color           = function () { return 'GREEN'; }
+SipCall.prototype.authorization_line  = function () { 
+  return 'INVITE:sip:' + this.phone_number + '@' + this.sip_socket.get_sip_server_address();
+}
 
 function SipCall (sip_client,sip_socket,phone_number) { 
   this.initialize(sip_client,sip_socket);
