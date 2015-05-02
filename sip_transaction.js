@@ -45,7 +45,7 @@ SipTransaction.prototype.create_listener = function (message_type,callback) {
   }
 
   this.listeners[message_type] = callback_with_ignore;
-  this.sip_socket.on(message_type,callback_with_ignore);
+  this.sip_socket.once(message_type,callback_with_ignore);
 
 }
 
