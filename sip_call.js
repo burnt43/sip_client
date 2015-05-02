@@ -33,9 +33,7 @@ SipCall.prototype.execute = function () {
 
   this.create_listener('200', function(data) {
     var ack_with_auth = new SipMessage( SipMessageTemplates.ack_with_auth, self.message_data(), 102 );
-    setTimeout( function () {
-      self.sip_socket.write( ack_with_auth.to_s() );
-    }, 1000 );
+    self.sip_socket.write( ack_with_auth.to_s() );
   });
 
   this.sip_socket.write( initial_request.to_s() );
